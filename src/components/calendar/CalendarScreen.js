@@ -13,8 +13,9 @@ import { uiOpenModal } from "../../actions/ui";
 
 import "moment/locale/es";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { eventSetActive } from "../../actions/events";
+import { eventClearActiveEvent, eventSetActive } from "../../actions/events";
 import { AddNewFab } from "../ui/AddNewFab";
+import { DeleteEventFab } from "../ui/DeleteEventFab";
 
 moment.locale("es");
 
@@ -37,7 +38,7 @@ const localizer = momentLocalizer(moment);
 export const CalendarScreen = () => {
   const dispatch = useDispatch();
   // TODO: leer del store, los eventos
-  const { events } = useSelector((state) => state.calendar);
+  const { events, activeEvent } = useSelector((state) => state.calendar);
 
   const [lastView, setLastView] = useState(
     localStorage.getItem("lastView") || "month"
@@ -59,6 +60,11 @@ export const CalendarScreen = () => {
     // console.log(e);
     setLastView(e);
     localStorage.setItem("lastView", e);
+  };
+
+  const onSelectSlot = (e) => {
+    // console.log(e);
+    dispatch(eventClearActiveEvent());
   };
 
   const eventStyleGetter = (event, start, end, isSelected) => {
@@ -90,6 +96,8 @@ export const CalendarScreen = () => {
         onDoubleClickEvent={onDoubleClick}
         onSelectEvent={onSelectEvent}
         onView={onViewChange}
+        onSelectSlot={onSelectSlot}
+        selectable={true}
         view={lastView}
         components={{
           event: CalendarEvent,
@@ -97,6 +105,8 @@ export const CalendarScreen = () => {
       />
 
       <AddNewFab />
+
+      {activeEvent && <DeleteEventFab />}
 
       <CalendarModal />
     </div>
