@@ -1,5 +1,4 @@
-import { useState } from "react";
-
+import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -11,9 +10,13 @@ import { CalendarModal } from "./CalendarModal";
 
 import { uiOpenModal } from "../../actions/ui";
 
-import "moment/locale/es";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { eventClearActiveEvent, eventSetActive } from "../../actions/events";
+import "moment/locale/es";
+import {
+  eventSetActive,
+  eventClearActiveEvent,
+  eventStartLoading,
+} from "../../actions/events";
 import { AddNewFab } from "../ui/AddNewFab";
 import { DeleteEventFab } from "../ui/DeleteEventFab";
 
@@ -21,56 +24,39 @@ moment.locale("es");
 
 const localizer = momentLocalizer(moment);
 
-// const events = [
-//   {
-//     title: "Cumpleaños del jefe",
-//     start: moment().toDate(),
-//     end: moment().add(2, "hours").toDate(),
-//     bgcolor: "#fafafa",
-//     notes: "Comprar el pastel",
-//     user: {
-//       _id: "123",
-//       name: "Fernando",
-//     },
-//   },
-// ];
-
 export const CalendarScreen = () => {
   const dispatch = useDispatch();
-  // TODO: leer del store, los eventos
   const { events, activeEvent } = useSelector((state) => state.calendar);
+  const { uid } = useSelector((state) => state.auth);
 
   const [lastView, setLastView] = useState(
     localStorage.getItem("lastView") || "month"
   );
 
+  useEffect(() => {
+    dispatch(eventStartLoading());
+  }, [dispatch]);
+
   const onDoubleClick = (e) => {
-    // console.log(e);
-    // console.log("abrir modal");
     dispatch(uiOpenModal());
   };
 
   const onSelectEvent = (e) => {
-    // console.log(e);
-    // console.log("Click");
     dispatch(eventSetActive(e));
   };
 
   const onViewChange = (e) => {
-    // console.log(e);
     setLastView(e);
     localStorage.setItem("lastView", e);
   };
 
   const onSelectSlot = (e) => {
-    // console.log(e);
     dispatch(eventClearActiveEvent());
   };
 
   const eventStyleGetter = (event, start, end, isSelected) => {
-    // console.log(event, start, end, isSelected);
     const style = {
-      backgroundColor: "#367CF7",
+      backgroundColor: uid === event.user._id ? "#367CF7" : "#465660",
       borderRadius: "0px",
       opacity: 0.8,
       display: "block",

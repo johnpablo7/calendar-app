@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import moment from "moment";
 import Modal from "react-modal";
 import DateTimePicker from "react-datetime-picker";
-import Swall from "sweetalert2";
+import Swal from "sweetalert2";
 
 import { uiCloseModal } from "../../actions/ui";
 import {
-  eventAddNew,
   eventClearActiveEvent,
-  eventUpdated,
+  eventStartAddNew,
+  eventStartUpdate,
 } from "../../actions/events";
 
 const customStyles = {
@@ -25,7 +25,7 @@ const customStyles = {
 };
 Modal.setAppElement("#root");
 
-const now = moment().minutes(0).seconds(0).add(1, "hours");
+const now = moment().minutes(0).seconds(0).add(1, "hours"); // 3:00:00
 const nowPlus1 = now.clone().add(1, "hours");
 
 const initEvent = {
@@ -38,7 +38,6 @@ const initEvent = {
 export const CalendarModal = () => {
   const { modalOpen } = useSelector((state) => state.ui);
   const { activeEvent } = useSelector((state) => state.calendar);
-
   const dispatch = useDispatch();
 
   const [dateStart, setDateStart] = useState(now.toDate());
@@ -55,7 +54,6 @@ export const CalendarModal = () => {
     } else {
       setFormValues(initEvent);
     }
-    // console.log(activeEvent);
   }, [activeEvent, setFormValues]);
 
   const handleInputChange = ({ target }) => {
@@ -66,8 +64,7 @@ export const CalendarModal = () => {
   };
 
   const closeModal = () => {
-    // console.log('closing....')
-    // console.log("cerrar el modal");
+    // TODO: cerrar el modal
     dispatch(uiCloseModal());
     dispatch(eventClearActiveEvent());
     setFormValues(initEvent);
@@ -75,7 +72,6 @@ export const CalendarModal = () => {
 
   const handleStartDateChange = (e) => {
     setDateStart(e);
-    // console.log(e);
     setFormValues({
       ...formValues,
       start: e,
@@ -84,7 +80,6 @@ export const CalendarModal = () => {
 
   const handleEndDateChange = (e) => {
     setDateEnd(e);
-    // console.log(e);
     setFormValues({
       ...formValues,
       end: e,
@@ -93,43 +88,26 @@ export const CalendarModal = () => {
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
-    // console.log(formValues);
 
     const momentStart = moment(start);
     const momentEnd = moment(end);
 
-    console.log(momentStart);
-    console.log(momentEnd);
-
     if (momentStart.isSameOrAfter(momentEnd)) {
-      // console.log("Fecha 2 debe de ser mayor");
-      Swall.fire(
+      return Swal.fire(
         "Error",
         "La fecha fin debe de ser mayor a la fecha de inicio",
         "error"
       );
-      return;
     }
 
     if (title.trim().length < 2) {
       return setTitleValid(false);
     }
 
-    // TODO: realizar grabación en la base de datos
-    // console.log(formValues);
     if (activeEvent) {
-      dispatch(eventUpdated(formValues));
+      dispatch(eventStartUpdate(formValues));
     } else {
-      dispatch(
-        eventAddNew({
-          ...formValues,
-          id: new Date().getTime(),
-          user: {
-            _id: "666",
-            name: "Marcos",
-          },
-        })
-      );
+      dispatch(eventStartAddNew(formValues));
     }
 
     setTitleValid(true);
@@ -139,7 +117,6 @@ export const CalendarModal = () => {
   return (
     <Modal
       isOpen={modalOpen}
-      // onAfterOpen={afterOpenModal}
       onRequestClose={closeModal}
       style={customStyles}
       closeTimeoutMS={200}
@@ -160,7 +137,6 @@ export const CalendarModal = () => {
 
         <div className="form-group">
           <label>Fecha y hora fin</label>
-
           <DateTimePicker
             onChange={handleEndDateChange}
             value={dateEnd}
@@ -174,7 +150,7 @@ export const CalendarModal = () => {
           <label>Titulo y notas</label>
           <input
             type="text"
-            className={`form-control ${!titleValid && "is-invalid"}`}
+            className={`form-control ${!titleValid && "is-invalid"} `}
             placeholder="Título del evento"
             name="title"
             autoComplete="off"
