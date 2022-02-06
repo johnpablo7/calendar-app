@@ -5,11 +5,13 @@ import { prepareEvents } from "../helpers/prepareEvent";
 
 export const eventStartAddNew = (event) => {
   return async (dispatch, getState) => {
+    // console.log(event)
     const { uid, name } = getState().auth;
 
     try {
       const resp = await fetchConToken("events", event, "POST");
       const body = await resp.json();
+      // console.log(body)
 
       if (body.ok) {
         event.id = body.evento.id;
@@ -17,7 +19,7 @@ export const eventStartAddNew = (event) => {
           _id: uid,
           name: name,
         };
-
+        // console.log(event)
         dispatch(eventAddNew(event));
       }
     } catch (error) {
@@ -43,6 +45,7 @@ export const eventClearActiveEvent = () => ({
 export const eventStartUpdate = (event) => {
   return async (dispatch) => {
     try {
+      // console.log(event)
       const resp = await fetchConToken(`events/${event.id}`, event, "PUT");
       const body = await resp.json();
 
@@ -65,6 +68,7 @@ const eventUpdated = (event) => ({
 export const eventStartDelete = () => {
   return async (dispatch, getState) => {
     const { id } = getState().calendar.activeEvent;
+    // console.log(id)
     try {
       const resp = await fetchConToken(`events/${id}`, {}, "DELETE");
       const body = await resp.json();
@@ -87,8 +91,10 @@ export const eventStartLoading = () => {
     try {
       const resp = await fetchConToken("events");
       const body = await resp.json();
+      // console.log(body)
 
       const events = prepareEvents(body.eventos);
+      // console.log(events)
       dispatch(eventLoaded(events));
     } catch (error) {
       console.log(error);

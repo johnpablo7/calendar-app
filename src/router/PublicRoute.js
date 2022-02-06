@@ -1,7 +1,6 @@
 import { Navigate } from "react-router";
 import PropTypes from "prop-types";
 
-
 export const PublicRoute = ({ isAuthenticated, element }) => {
 	
   return (
@@ -10,7 +9,6 @@ export const PublicRoute = ({ isAuthenticated, element }) => {
 			: (element)
 	)
 }
-
 
 PublicRoute.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,

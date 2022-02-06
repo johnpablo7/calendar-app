@@ -5,7 +5,6 @@ import { types } from "../types/types";
 //   title: "Cumpleaños del jefe",
 //   start: moment().toDate(),
 //   end: moment().add(2, "hours").toDate(),
-//   bgcolor: "#fafafa",
 //   notes: "Comprar el pastel",
 //   user: {
 //     _id: "123",

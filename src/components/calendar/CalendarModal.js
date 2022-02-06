@@ -88,7 +88,6 @@ export const CalendarModal = () => {
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
-
     const momentStart = moment(start);
     const momentEnd = moment(end);
 
