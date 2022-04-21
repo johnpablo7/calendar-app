@@ -6,6 +6,7 @@ export const DeleteEventFab = () => {
   const dispatch = useDispatch();
 
   const handleDelete = () => {
+    // console.log('Hola');
     dispatch(eventStartDelete());
   };
 
