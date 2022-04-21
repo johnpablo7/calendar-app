@@ -10,13 +10,13 @@ export const LoginScreen = () => {
   const dispatch = useDispatch();
 
   const [formLoginValues, handleLoginInputChange] = useForm({
-    lEmail: "john@gmail.com",
-    lPassword: "123456",
+    lEmail: "",
+    lPassword: "",
   });
 
   const [formRegisterValues, handleRegisterInputChange] = useForm({
-    rName: "Theo",
     rEmail: "theo@gmail.com",
+    rName: "theo",
     rPassword1: "123456",
     rPassword2: "123456",
   });
@@ -26,11 +26,14 @@ export const LoginScreen = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
+    // console.log(lEmail, lPassword);
     dispatch(startLogin(lEmail, lPassword));
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
+
+    // console.log(rPassword1, rPassword2);
 
     if (rPassword1 !== rPassword2) {
       return Swal.fire(
